@@ -14,9 +14,16 @@ export interface LoginResponse {
   };
 }
 
-// User types
+// Role type (from API)
+export interface Role {
+  _id: string;
+  name: string;
+}
+
+// User types - matching API response structure
 export interface User {
-  id: string | number;
+  _id?: string; // MongoDB ID from API
+  id?: string | number; // Legacy support
   email?: string;
   name?: string;
   firstName?: string;
@@ -25,11 +32,50 @@ export interface User {
   country?: string;
   status?: string;
   plan_name?: string;
+  role?: string | Role; // Can be ObjectId string or populated Role object
+  uid?: string; // Firebase UID
+  securityConfirmed?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// Request payload for creating a user
+export interface CreateUserRequest {
+  name: string;
+  email: string;
+  password?: string; // Required if no uid
+  uid?: string; // Firebase UID (if provided, password not required)
+  role?: string; // ObjectId of Role
+  securityConfirmed?: boolean;
+}
+
+// Request payload for updating a user
+export interface UpdateUserRequest {
+  name?: string;
+  email?: string;
+  password?: string;
+  uid?: string;
   role?: string;
+  securityConfirmed?: boolean;
+}
+
+// Response for delete operation
+export interface DeleteUserResponse {
+  message: string;
+  id: string;
 }
 
 export interface UsersResponse {
   data: User[];
+  pagination?: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+  // Legacy support
   total?: number;
   page?: number;
   limit?: number;
@@ -37,6 +83,8 @@ export interface UsersResponse {
 }
 
 export interface UsersQueryParams {
-  page?: number;
+  page?: number | string; // Can be number or "all"
   limit?: number;
+  search?: string;
+  role?: string; // ObjectId to filter by role
 }

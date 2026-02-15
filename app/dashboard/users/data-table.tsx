@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable
 } from "@tanstack/react-table";
-import { ArrowUpDown, CheckIcon, ChevronDown, MoreHorizontal, PlusCircle } from "lucide-react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal, PlusCircle, Eye, Pencil, Trash2 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -50,6 +50,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 export type User = {
   id: number;
+  _id?: string; // MongoDB ID from API
   firstName?: string;
   lastName?: string;
   name?: string;
@@ -59,26 +60,44 @@ export type User = {
   plan_name: string;
   role?: string;
   email?: string;
+  securityConfirmed?: boolean;
+  uid?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
-export const columns: ColumnDef<User>[] = [
+// Action handlers type
+export interface UserTableActions {
+  onView?: (user: User) => void;
+  onEdit?: (user: User) => void;
+  onDelete?: (user: User) => void;
+}
+
+// Factory function to create columns with action handlers
+export const createColumns = (actions?: UserTableActions): ColumnDef<User>[] => [
   {
     accessorKey: "id",
     header: "#",
-    cell: ({ row }) => row.getValue("id")
+    cell: ({ row }) => row.getValue("id") || row.original._id?.slice(-6) || "-"
   },
   {
     accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-4">
-        <Avatar>
-          <AvatarImage src={row.original.image} alt="shadcn ui kit" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
-        <div className="capitalize">{row.getValue("name")}</div>
-      </div>
-    )
+    cell: ({ row }) => {
+      const name = row.getValue("name") as string;
+      const initials = name
+        ? name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
+        : "U";
+      return (
+        <div className="flex items-center gap-4">
+          <Avatar>
+            <AvatarImage src={row.original.image} alt={name || "User"} />
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+          <div className="capitalize">{name || "N/A"}</div>
+        </div>
+      );
+    }
   },
   {
     accessorKey: "role",
@@ -93,7 +112,7 @@ export const columns: ColumnDef<User>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => row.getValue("role")
+    cell: ({ row }) => row.getValue("role") || "N/A"
   },
   {
     accessorKey: "plan_name",
@@ -108,7 +127,7 @@ export const columns: ColumnDef<User>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => row.getValue("plan_name")
+    cell: ({ row }) => row.getValue("plan_name") || "N/A"
   },
   {
     accessorKey: "email",
@@ -123,7 +142,7 @@ export const columns: ColumnDef<User>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => row.getValue("email")
+    cell: ({ row }) => row.getValue("email") || "N/A"
   },
   {
     accessorKey: "country",
@@ -138,7 +157,7 @@ export const columns: ColumnDef<User>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => row.getValue("country")
+    cell: ({ row }) => row.getValue("country") || "N/A"
   },
   {
     accessorKey: "status",
@@ -184,26 +203,41 @@ export const columns: ColumnDef<User>[] = [
           </Badge>
         );
       }
-      return <span className="capitalize">{status}</span>;
+      return <span className="capitalize">{status || "N/A"}</span>;
     }
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
+      const user = row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">Mở menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuLabel>Hành động</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View user</DropdownMenuItem>
-            <DropdownMenuItem>Delete</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => actions?.onView?.(user)}>
+              <Eye className="mr-2 h-4 w-4" />
+              Xem chi tiết
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => actions?.onEdit?.(user)}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Chỉnh sửa
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => actions?.onDelete?.(user)}
+              className="text-destructive focus:text-destructive"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Xóa
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -211,15 +245,26 @@ export const columns: ColumnDef<User>[] = [
   }
 ];
 
-export default function UsersDataTable({ data }: { data: User[] }) {
+// Legacy export for backward compatibility
+export const columns = createColumns();
+
+interface UsersDataTableProps {
+  data: User[];
+  actions?: UserTableActions;
+}
+
+export default function UsersDataTable({ data, actions }: UsersDataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  // Create columns with action handlers
+  const tableColumns = React.useMemo(() => createColumns(actions), [actions]);
+
   const table = useReactTable({
     data,
-    columns,
+    columns: tableColumns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -469,7 +514,7 @@ export default function UsersDataTable({ data }: { data: User[] }) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell colSpan={tableColumns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
