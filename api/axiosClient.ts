@@ -20,7 +20,7 @@ export const removeStoredToken = (): void => {
 };
 
 const axiosClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000",
+  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://103.82.38.96:3066",
   headers: {
     "Content-Type": "application/json",
   },
