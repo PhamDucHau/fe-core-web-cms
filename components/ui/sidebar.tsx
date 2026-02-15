@@ -156,6 +156,7 @@ function Sidebar({
   side = "left",
   variant = "sidebar",
   collapsible = "offcanvas",
+  forceDesktop = false,
   className,
   children,
   ...props
@@ -163,6 +164,8 @@ function Sidebar({
   side?: "left" | "right"
   variant?: "sidebar" | "floating" | "inset"
   collapsible?: "offcanvas" | "icon" | "none"
+  /** Luôn dùng layout desktop, không render Sheet (tránh overlay mờ) */
+  forceDesktop?: boolean
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
@@ -181,7 +184,7 @@ function Sidebar({
     )
   }
 
-  if (isMobile) {
+  if (isMobile && !forceDesktop) {
     return (
       <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
         <SheetContent
