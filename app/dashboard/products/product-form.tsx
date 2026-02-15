@@ -291,9 +291,9 @@ export default function ProductForm({
                       <FormControl>
                         <Input placeholder="premium-wireless-headphones" {...field} />
                       </FormControl>
-                      <FormDescription>
+                      {/* <FormDescription>
                         URL-friendly name. Auto-generated if left empty.
-                      </FormDescription>
+                      </FormDescription> */}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -378,7 +378,7 @@ export default function ProductForm({
                           value={field.value ?? ""}
                         />
                       </FormControl>
-                      <FormDescription>Must be less than price</FormDescription>
+                      {/* <FormDescription>Must be less than price</FormDescription> */}
                       <FormMessage />
                     </FormItem>
                   )}

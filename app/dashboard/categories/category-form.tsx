@@ -159,9 +159,9 @@ export default function CategoryForm({
                   <FormControl>
                     <Input placeholder="electronics" {...field} />
                   </FormControl>
-                  <FormDescription>
+                  {/* <FormDescription>
                     URL-friendly name. Auto-generated if left empty.
-                  </FormDescription>
+                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
