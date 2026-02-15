@@ -34,4 +34,4 @@ jobs:
             docker pull haupham2311/fe-core-web-cms:latest
             docker stop fe-core-web-cms || true
             docker rm fe-core-web-cms || true
-            docker run -d --name volunteer-fe -p 5005:3000 haupham2311/fe-core-web-cms:latest
+            docker run -d --name fe-core-web-cms -p 5005:3000 haupham2311/fe-core-web-cms:latest
