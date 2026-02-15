@@ -52,9 +52,12 @@ const productFormSchema = z.object({
   currency: z.string().default("VND"),
   stockQuantity: z.coerce.number().min(0).default(0),
   status: z.enum(["DRAFT", "ACTIVE", "INACTIVE"]).default("DRAFT"),
-  categoryId: z.string().optional(),
+  categoryId: z.string().optional().default("__none__"),
   brand: z.string().optional(),
-  thumbnailUrl: z.string().url("Invalid URL").optional().or(z.literal("")),
+  thumbnailUrl: z
+    .union([z.string().url("Invalid URL"), z.literal("")])
+    .optional()
+    .default(""),
   images: z.array(z.string()).optional(),
   weight: z.coerce.number().min(0).optional(),
   dimensions: z
@@ -113,7 +116,7 @@ export default function ProductForm({
       currency: "VND",
       stockQuantity: 0,
       status: "DRAFT",
-      categoryId: "",
+      categoryId: "__none__",
       brand: "",
       thumbnailUrl: "",
       images: [],
@@ -140,7 +143,7 @@ export default function ProductForm({
         currency: product.currency || "VND",
         stockQuantity: product.stockQuantity,
         status: product.status,
-        categoryId: product.categoryId || "",
+        categoryId: product.categoryId || "__none__",
         brand: product.brand || "",
         thumbnailUrl: product.thumbnailUrl || "",
         images: product.images || [],
@@ -164,7 +167,7 @@ export default function ProductForm({
         currency: "VND",
         stockQuantity: 0,
         status: "DRAFT",
-        categoryId: "",
+        categoryId: "__none__",
         brand: "",
         thumbnailUrl: "",
         images: [],
@@ -182,7 +185,7 @@ export default function ProductForm({
   const handleSubmit = (values: ProductFormValues) => {
     const data: CreateProductRequest | UpdateProductRequest = {
       ...values,
-      categoryId: values.categoryId || undefined,
+      categoryId: values.categoryId === "__none__" || !values.categoryId ? undefined : values.categoryId,
       salePrice: values.salePrice || undefined,
       thumbnailUrl: values.thumbnailUrl || undefined,
       images: values.images?.length ? values.images : undefined,
@@ -450,14 +453,17 @@ export default function ProductForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Category</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value || "__none__"}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select category" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">No Category</SelectItem>
+                          <SelectItem value="__none__">No Category</SelectItem>
                           {categories.map((category) => (
                             <SelectItem key={category._id} value={category._id}>
                               {category.name}
