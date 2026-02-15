@@ -57,10 +57,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { Product, ProductStatus } from "@/api/types";
+import type { Product, ProductStatus, Category } from "@/api/types";
 
 interface ProductsDataTableProps {
   data: Product[];
+  categories?: Category[];
   onView?: (product: Product) => void;
   onEdit?: (product: Product) => void;
   onDelete?: (product: Product) => void;
@@ -99,11 +100,27 @@ const getStockBadge = (quantity: number, isInStock?: boolean) => {
 
 export default function ProductsDataTable({
   data,
+  categories = [],
   onView,
   onEdit,
   onDelete,
   onRestore,
 }: ProductsDataTableProps) {
+  // Helper function to get category name by ID
+  const getCategoryName = (categoryId?: string, category?: Category): string => {
+    // First try to use the populated category object
+    if (category?.name) {
+      return category.name;
+    }
+    // Fallback to looking up in categories array by categoryId
+    if (categoryId && categories.length > 0) {
+      const foundCategory = categories.find((c) => c._id === categoryId);
+      if (foundCategory) {
+        return foundCategory.name;
+      }
+    }
+    return "-";
+  };
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -220,7 +237,7 @@ export default function ProductsDataTable({
       accessorKey: "category",
       header: "Category",
       cell: ({ row }) => (
-        <span className="text-sm">{row.original.category?.name || "-"}</span>
+        <span className="text-sm">{getCategoryName(row.original.categoryId, row.original.category)}</span>
       ),
     },
     {

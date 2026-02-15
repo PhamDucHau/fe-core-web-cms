@@ -166,6 +166,7 @@ export default function ProductsPage() {
         <CardContent>
           <ProductsDataTable
             data={products}
+            categories={categories}
             onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}
