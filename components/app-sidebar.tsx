@@ -9,7 +9,9 @@ import {
   IconFileAi,
   IconFileDescription,
   IconFolder,
-  IconInnerShadowTop,
+  IconCategory,
+  // IconInnerShadowTop,
+  IconPackage,
   IconListDetails,
   IconNews,
   IconUsers
