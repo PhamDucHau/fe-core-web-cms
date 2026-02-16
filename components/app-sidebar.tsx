@@ -3,13 +3,15 @@
 import * as React from "react"
 import {
   IconCamera,
-  IconChartBar, IconCircle,
+  IconChartBar,
+  IconCircle,
   IconDashboard,
   IconFileAi,
   IconFileDescription,
   IconFolder,
   IconInnerShadowTop,
   IconListDetails,
+  IconNews,
   IconUsers
 } from "@tabler/icons-react";
 
@@ -42,6 +44,11 @@ const data = {
       title: "Users",
       url: "/dashboard/users",
       icon: IconListDetails,
+    },
+    {
+      title: "Blogs",
+      url: "/dashboard/blogs",
+      icon: IconNews,
     },
     {
       title: "Settings",
