@@ -14,14 +14,9 @@ export function SiteHeader() {
         />
         <h1 className="text-base font-medium">Dashboard</h1>
         <div className="ml-auto flex items-center gap-2">
-          <Button asChild size="sm" className="hidden sm:flex">
-            <Link
-              href="https://shadcnuikit.com/"
-              rel="noopener noreferrer"
-              target="_blank"
-              className="dark:text-foreground"
-            >
-              Get Pro
+          <Button asChild size="sm" variant="outline" className="hidden sm:flex">
+            <Link href="/" className="dark:text-foreground">
+              Back to Store
             </Link>
           </Button>
         </div>

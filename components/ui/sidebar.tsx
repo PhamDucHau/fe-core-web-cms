@@ -24,7 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-
+//aloo
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
@@ -131,6 +131,7 @@ function SidebarProvider({
       <TooltipProvider delayDuration={0}>
         <div
           data-slot="sidebar-wrapper"
+          suppressHydrationWarning
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH,
@@ -155,6 +156,7 @@ function Sidebar({
   side = "left",
   variant = "sidebar",
   collapsible = "offcanvas",
+  forceDesktop = false,
   className,
   children,
   ...props
@@ -162,6 +164,8 @@ function Sidebar({
   side?: "left" | "right"
   variant?: "sidebar" | "floating" | "inset"
   collapsible?: "offcanvas" | "icon" | "none"
+  /** Luôn dùng layout desktop, không render Sheet (tránh overlay mờ) */
+  forceDesktop?: boolean
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
@@ -180,7 +184,7 @@ function Sidebar({
     )
   }
 
-  if (isMobile) {
+  if (isMobile && !forceDesktop) {
     return (
       <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
         <SheetContent
@@ -208,6 +212,7 @@ function Sidebar({
   return (
     <div
       className="group peer text-sidebar-foreground hidden md:block"
+      suppressHydrationWarning
       data-state={state}
       data-collapsible={state === "collapsed" ? collapsible : ""}
       data-variant={variant}
