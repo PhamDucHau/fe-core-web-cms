@@ -19,9 +19,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     setMounted(true);
   }, []);
 
+  // Server và client đầu tiên đều render loading - tránh hydration mismatch
   if (!mounted) {
     return (
-      <div className="flex min-h-svh w-full items-center justify-center">
+      <div className="flex min-h-svh w-full items-center justify-center" suppressHydrationWarning>
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     );

@@ -58,11 +58,17 @@ export const blogService = {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await axiosClient.post<{ url: string }>("/upload", formData, {
+    const response = await axiosClient.post<{ url: string }>("/minio/file", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
-    return response.data.url;
+    // API trả về relative path, cần build full URL giống file.service
+    const relativePath = response.data.url;
+    if (relativePath.startsWith("http://") || relativePath.startsWith("https://")) {
+      return relativePath;
+    }
+    const path = relativePath.startsWith("/") ? relativePath : `/${relativePath}`;
+    return `https://seyeuthuong.org${path}`;
   },
 };
