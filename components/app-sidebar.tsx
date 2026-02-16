@@ -3,7 +3,6 @@
 import * as React from "react"
 import {
   IconCamera,
-  IconCategory,
   IconChartBar,
   IconCircle,
   IconDashboard,
@@ -12,7 +11,7 @@ import {
   IconFolder,
   IconInnerShadowTop,
   IconListDetails,
-  IconPackage,
+  IconNews,
   IconUsers
 } from "@tabler/icons-react";
 
@@ -55,6 +54,11 @@ const data = {
       title: "Users",
       url: "/dashboard/users",
       icon: IconListDetails,
+    },
+    {
+      title: "Blogs",
+      url: "/dashboard/blogs",
+      icon: IconNews,
     },
     {
       title: "Settings",
