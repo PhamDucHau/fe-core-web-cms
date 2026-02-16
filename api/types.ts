@@ -40,3 +40,13 @@ export interface UsersQueryParams {
   page?: number;
   limit?: number;
 }
+
+// File Upload types (MinIO)
+export interface FileUploadResponse {
+  url: string;
+}
+
+export interface FileUploadResult {
+  url: string; // Full URL with domain prefix
+  originalUrl: string; // Original URL from API response
+}
