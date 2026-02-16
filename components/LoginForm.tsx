@@ -24,7 +24,7 @@ export function LoginForm() {
     try {
       await authService.login({ email, password });
       // Dùng window.location để tránh race condition với ProtectedRoute / hydration
-      window.location.href = redirect;
+      window.location.href = redirect === "/" ? "/dashboard" : redirect;
     } catch (err: unknown) {
       const message =
         err && typeof err === "object" && "response" in err

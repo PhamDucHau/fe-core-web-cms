@@ -41,6 +41,16 @@ const data = {
       icon: IconDashboard,
     },
     {
+      title: "Products",
+      url: "/dashboard/products",
+      icon: IconPackage,
+    },
+    {
+      title: "Categories",
+      url: "/dashboard/categories",
+      icon: IconCategory,
+    },
+    {
       title: "Users",
       url: "/dashboard/users",
       icon: IconListDetails,
@@ -145,7 +155,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" forceDesktop {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

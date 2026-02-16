@@ -1,20 +1,82 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { userService } from "@/services/user.service";
-import type { UsersQueryParams } from "@/api/types";
+import type { UsersQueryParams, CreateUserRequest, UpdateUserRequest } from "@/api/types";
 
 export const USERS_QUERY_KEY = "users";
 
+/**
+ * Hook to fetch list of users with pagination, search, filter
+ */
 export function useUsers(params: UsersQueryParams = {}) {
-  const { page = 1, limit = 10 } = params;
+  const { page = 1, limit = 10, search, role } = params;
 
   return useQuery({
-    queryKey: [USERS_QUERY_KEY, page, limit],
-    queryFn: () => userService.getUsers({ page, limit }),
+    queryKey: [USERS_QUERY_KEY, page, limit, search, role],
+    queryFn: () => userService.getUsers({ page, limit, search, role }),
     staleTime: 5 * 60 * 1000, // 5 minutes - data được coi là fresh
     gcTime: 10 * 60 * 1000, // 10 minutes - garbage collection time (trước đây là cacheTime)
     retry: 1,
     refetchOnWindowFocus: false,
+  });
+}
+
+/**
+ * Hook to fetch a single user by ID
+ */
+export function useUser(id: string | null) {
+  return useQuery({
+    queryKey: [USERS_QUERY_KEY, id],
+    queryFn: () => userService.getUserById(id!),
+    enabled: !!id, // Only fetch if id is provided
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+}
+
+/**
+ * Hook to create a new user
+ */
+export function useCreateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateUserRequest) => userService.createUser(data),
+    onSuccess: () => {
+      // Invalidate users list to refetch
+      queryClient.invalidateQueries({ queryKey: [USERS_QUERY_KEY] });
+    },
+  });
+}
+
+/**
+ * Hook to update an existing user
+ */
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateUserRequest }) =>
+      userService.updateUser(id, data),
+    onSuccess: () => {
+      // Invalidate users list to refetch
+      queryClient.invalidateQueries({ queryKey: [USERS_QUERY_KEY] });
+    },
+  });
+}
+
+/**
+ * Hook to delete a user
+ */
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => userService.deleteUser(id),
+    onSuccess: () => {
+      // Invalidate users list to refetch
+      queryClient.invalidateQueries({ queryKey: [USERS_QUERY_KEY] });
+    },
   });
 }
